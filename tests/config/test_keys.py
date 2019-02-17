@@ -43,3 +43,14 @@ def test_is_command_key_nonmatching_keys(valid_command):
 def test_is_command_key_invalid_command(invalid_command):
     with pytest.raises(keys.InvalidCommand):
         keys.is_command_key(invalid_command, 'esc')  # key doesn't matter
+
+
+def test_is_command_elligible_for_tips(valid_command):
+    assert (keys.is_command_elligible_for_tips(valid_command) ==
+            ('is_random_tip' not in keys.KEY_BINDINGS[valid_command] or
+            keys.KEY_BINDINGS[valid_command]['is_random_tip']))
+
+
+def test_HELP_is_not_allowed_as_tip():
+    assert (keys.KEY_BINDINGS['HELP']['is_random_tip'] is False)
+    assert (keys.is_command_elligible_for_tips('HELP') is False)

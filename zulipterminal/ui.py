@@ -5,7 +5,11 @@ import random
 
 import urwid
 
-from zulipterminal.config.keys import is_command_key, KEY_BINDINGS
+from zulipterminal.config.keys import (
+    is_command_key,
+    KEY_BINDINGS,
+    is_command_elligible_for_tips
+)
 from zulipterminal.config.themes import THEMES
 from zulipterminal.ui_tools.boxes import WriteBox, SearchBox
 from zulipterminal.ui_tools.views import (
@@ -53,14 +57,20 @@ class View(urwid.WidgetWrap):
         )
 
     def get_random_help(self) -> List[Any]:
-        # Get a hotkey randomly from KEY_BINDINGS
-        random_int = random.randint(0, len(KEY_BINDINGS) - 1)
-        hotkey = list(KEY_BINDINGS.items())[random_int]
-        return [
-            'Help(?): ',
-            ('code', ' ' + ', '.join(hotkey[1]['keys']) + ' '),
-            ' ' + hotkey[1]['help_text'],  # type: ignore
-        ]
+        # Get an allowed (ie. elligible for being displayed as a tip)
+        # hotkey randomly from KEY_BINDINGS
+        l = len(KEY_BINDINGS)
+        random_int = random.randint(0, l - 1)
+        hotkeys = list(KEY_BINDINGS.items())
+        for i in range(0, l):
+            hotkey = hotkeys[(random_int + i) % l]
+            if is_command_elligible_for_tips(hotkey[0]):
+                return [
+                    'Help(?): ',
+                    ('code', ' ' + ', '.join(hotkey[1]['keys']) + ' '),
+                    ' ' + hotkey[1]['help_text'],  # type: ignore
+                ]
+        return ['Help(?): ', ]
 
     def set_footer_text(self, text_list: Optional[List[Any]]=None) -> None:
         if text_list is None:

@@ -4,10 +4,12 @@ KEY_BINDINGS = {
     'HELP': {
         'keys': {'?'},
         'help_text': 'Show/hide help menu',
+        'is_random_tip': False,
     },
     'GO_BACK': {
         'keys': {'esc'},
         'help_text': 'Go Back',
+        'is_random_tip': True,
     },
     'PREVIOUS_MESSAGE': {
         'keys': {'k', 'up'},
@@ -143,3 +145,16 @@ def keys_for_command(command: str) -> Set[str]:
         return set(KEY_BINDINGS[command]['keys'])
     except KeyError as exception:
         raise InvalidCommand(command)
+
+
+def is_command_elligible_for_tips(command: str) -> bool:
+    """
+    Return whether help tip should be displayed for particular command
+    """
+    try:
+        k = KEY_BINDINGS[command]
+        # command should be displayed in help tip unless specified otherwise
+        return ('is_random_tip' not in k) or (k['is_random_tip'] is True)
+    except KeyError as exception:
+        raise InvalidCommand(command)
+    return False
