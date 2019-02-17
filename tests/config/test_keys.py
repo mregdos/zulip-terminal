@@ -47,10 +47,11 @@ def test_is_command_key_invalid_command(invalid_command):
 
 def test_is_command_elligible_for_tips(valid_command):
     assert (keys.is_command_elligible_for_tips(valid_command) ==
-            ('is_random_tip' not in keys.KEY_BINDINGS[valid_command] or
-            keys.KEY_BINDINGS[valid_command]['is_random_tip']))
+            (('flags' not in keys.KEY_BINDINGS[valid_command]) or
+            ('excluded_from_tips' not in
+                keys.KEY_BINDINGS[valid_command]['flags'])))
 
 
 def test_HELP_is_not_allowed_as_tip():
-    assert (keys.KEY_BINDINGS['HELP']['is_random_tip'] is False)
+    assert ('excluded_from_tips' in keys.KEY_BINDINGS['HELP']['flags'])
     assert (keys.is_command_elligible_for_tips('HELP') is False)
